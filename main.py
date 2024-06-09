@@ -138,6 +138,7 @@ def test_proxy(proxy):
     
 # Scrape reviews for each page by finding all review containers, breaking them down into their elements, and creating dictionary for each
 def scrape_reviews(url, num_reviews, proxy, slow):
+    # If there is a proxy test it works, if it does, register it to driver
     if proxy:
         print(f"Trying proxy {proxy}...")
         if not test_proxy(proxy):
@@ -179,11 +180,13 @@ def scrape_reviews(url, num_reviews, proxy, slow):
                 if len(reviews) >= num_reviews:
                     break
                 try:
+                    # Click "read more" to ensure full review content and additional criteria ratings are scraped
                     read_more_button = container.find_element(By.CSS_SELECTOR, 'span[class$="_S Z"]')
                     driver.execute_script("arguments[0].click();", read_more_button)
                     if slow: random_delay()
                     random_interaction(driver)
 
+                    # Find review elements
                     rating_element = container.find_element(By.XPATH, './/span[contains(@class, "ui_bubble_rating")]')
                     review_rating = rating_element.get_attribute('class').split('_')[-1][0]
                     review_title = container.find_element(By.CSS_SELECTOR, 'a[class$="Qwuub"]').text
@@ -238,6 +241,7 @@ def scrape_reviews(url, num_reviews, proxy, slow):
             print(f"Scraped {len(reviews)}/{num_reviews} reviews so far.")
 
             try:
+                # Click next button to load next page after all review containers on this page have been scraped
                 random_interaction(driver)
                 WebDriverWait(driver=driver, timeout=20).until(
                         EC.presence_of_element_located((By.XPATH, '//div[@data-reviewid]'))
@@ -248,12 +252,14 @@ def scrape_reviews(url, num_reviews, proxy, slow):
                 
                 next_button.click()
                 print("Clicked next button.")
+
+                 # Allows time for React to populate the DOM
                 wait_for_page_load(driver)
                 WebDriverWait(driver=driver, timeout=20).until(
                         EC.presence_of_element_located((By.XPATH, '//div[@data-reviewid]'))
-                    )
-                
+                )
                 random_delay()
+                
 
             except Exception as e:
                 print(f"Error clicking next button: {str(e)}")
