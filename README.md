@@ -5,7 +5,7 @@ The task of scraping Tripadvisor's QANTAS review page for 1000 reviews has been 
 
 Selenium is used to identify the review containers, which then scrapes each individual portion of the review further using their css selectors. Care has been taken to not include dynamically generated selectors which could cause the program to not be able to find the relevant information for other pages, i.e. rendering the program non-generalisable. The program must attempt to emulate a human visitor to the site, as Tripadvisor has quite strong anti-bot detection, which combined with the fact that there is only approximately 5 reviews per page, slows scraping significantly.
 
-Extracting the data directly from the page manifest (stored in a \<script> tag) was explored (see unused file "manifest.py"), as it is more likely to not trigger bot detection and is more robust in data extraction, but it is not updated by the system beyond the first page, meaning reviews aside from the first page are not able to be collected.
+Extracting the data directly from the page manifest (stored in a \<script> tag) was explored (see unused file "manifest.py"), as it is more likely to not trigger bot detection and is more robust in data extraction, but it is not updated by the system beyond the first page, meaning reviews aside from the first page are not able to be collected. This approach is also less generalisable and therefore the standard selenium html element scraping method is employed.
 
 Instructions
 -----------
@@ -36,6 +36,7 @@ Robustness
 - If there are missing values for the individual criteria ratings (i.e. user did not rate that criteria), the criteria values are assigned to -1.
 - As previously mentioned, program is generalisable as it can scrape reviews from other similar pages on Tripadvisor, e.g. https://www.tripadvisor.com.au/Airline_Review-d8728931-Reviews-or5-Virgin-Australia.html#REVIEWS
 - Comprehensive use of both defensive programming and try-except blocks to prevent uncaught exceptions, and to continue execution in the event of an exception where appropriate.
+- The program clicks "read more" for each review prior to scraping it, to ensure the full content of the review, as well as any potential individual criteria ratings are available to be scraped.
 
 Limitations
 -----------
